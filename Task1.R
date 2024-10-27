@@ -70,7 +70,7 @@ for(i in 1:num_people){
 
 #make a matrix for testing that a friendship nomination is more likely between a pair of managers of a similar age. The value at position (i, j) is |age[i] - age[j]|
 
-
+gitr
 age_dif_matrix = matrix(0, nrow=num_people, ncol=num_people)
 for(i in 1:num_people){
   for(j in 1:num_people){
