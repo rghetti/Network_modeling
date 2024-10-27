@@ -82,7 +82,7 @@ for(i in 1:num_people){
 
 zm <- list(ad.matrix, same_department.matrix, tenure.matrix, age_dif_matrix)
 
-g2<-netlogit(f.matrix,zm, rep=permutations,nullhyp='qapy')
+g2<-netlogit(f.matrix,zm, rep=permutations,nullhyp='qapspp')
 g2$names<-c('intercept', 'advice', 'same_department', 'tenure', 'age_dif')
 summary(g2)
 
