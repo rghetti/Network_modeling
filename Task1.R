@@ -4,7 +4,6 @@ library(sna)
 library(network)
 
 
-cd
 #importing the data
 
 setwd("./Dataset")
@@ -93,4 +92,23 @@ summary(g2)
 
 
 #extract reporting as adjacency matrix
+rep = nodes[293:312,2:3]
+reports.matrix=matrix(0,nrow=num_people,ncol=num_people)
+colnames(reports.matrix)=1:ncol(reports.matrix)
+for(k in 1:(312-293+1)){
+  reports.matrix[rep[k,1],rep[k,2]]=1
+}
 
+#Test that if a person reports to another person as part of his function
+#in organization, then the first person more likely nominate the second
+#as a friend 
+
+zm1 <- list(ad.matrix, same_department.matrix, tenure.matrix, age_dif_matrix, 
+            reports.matrix)
+g3<-netlogit(f.matrix,zm1, rep=permutations,nullhyp='qapspp')
+g3$names<-c('intercept', 'advice', 'same_department', 'tenure', 'age_dif', 'report_matrix')
+summary(g3)
+
+#At the significance level of 0.05 we can see that there is not correlation 
+#between friendship and reporting one person to be a part of others functions 
+#in the organization
