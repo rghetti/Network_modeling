@@ -7,7 +7,7 @@
 #
 # Assignment 1 - Task 2
 
-
+library('ergm')
  #function calculating the given statics of an adjacency matrix:
  stat=function(net){
    z1=0
@@ -82,6 +82,8 @@ MHstep <- function(net, theta1, theta2, theta3){
   # according to the Metropolis-Hastings algorithm
   
   # computing both exponential
+  stat1=as.double(stat1)
+  stat2=as.double(stat2)
   exp1=exp(theta1*stat1[1]+theta2*stat1[2]+theta3*stat1[3])
   exp2=exp(theta1*stat2[1]+theta2*stat2[2]+theta3*stat2[3])
   
@@ -165,4 +167,40 @@ t2=0.68
 t3=0.05
 ad.matrix=matrix(0, 21,21)
 
-MC-simulation=MarkovChain(ad.matrix,t1,t2,t3)
+MC_simulation=MarkovChain(ad.matrix,t1,t2,t3)
+
+guess1=-2.5
+guess2=0.8
+guess3=0.1
+a.matrix=matrix(0,21,21)
+MC2.0=MarkovChain(a.matrix,guess1,guess2,guess3)
+
+alpha=-2
+beta=0.9
+gamma=0.2
+b=matrix(0,21,21)
+MC3.0=MarkovChain(b,alpha,beta,gamma)
+
+t=-2.2
+y=0.85
+u=0.14
+c=matrix(0,21,21)
+MC4.0=MarkovChain(c,t,y,u)
+
+q=-2.13
+w=0.87
+e=0.17
+d=matrix(0,21,21)
+MC5.0=MarkovChain(d,q,w,e)
+avr.dens=mean(MC5.0$statSim[1:1000,1])
+avr.rec=mean(MC5.0$statSim[1:1000,2])
+avr.star=mean(MC5.0$statSim[1:1000,3])
+
+z=-2.1225
+x=0.8721
+v=0.1721
+f=matrix(0,21,21)
+MC6.0=MarkovChain(f,z,x,v)
+avr.dens=mean(MC6.0$statSim[1:1000,1])
+avr.rec=mean(MC6.0$statSim[1:1000,2])
+avr.star=mean(MC6.0$statSim[1:1000,3])
