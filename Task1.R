@@ -4,7 +4,7 @@ library(sna)
 library(network)
 
 
-
+cd
 #importing the data
 
 setwd("./Dataset")
@@ -69,8 +69,7 @@ for(i in 1:num_people){
 }
 
 #make a matrix for testing that a friendship nomination is more likely between a pair of managers of a similar age. The value at position (i, j) is |age[i] - age[j]|
-
-gitr
+    
 age_dif_matrix = matrix(0, nrow=num_people, ncol=num_people)
 for(i in 1:num_people){
   for(j in 1:num_people){
@@ -91,4 +90,7 @@ summary(g2)
 #department or people, who they are asking an advice.
 #From the other hand, at the significance level of 0.05, tenure and 
 #age difference do not correlate with friendship nomination
+
+
+#extract reporting as adjacency matrix
 
