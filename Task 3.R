@@ -67,9 +67,19 @@ gof_results = gof(model1)
 par(mfrow=c(2,3),mar=c(5, 4, 4, 2))
 plot(gof_results)
 
-#The out degree distribution isn't accurately describing
-#the real network. The in degree fits the network faithfully
-#most of the time. The edge-wise shred partners does not accurately describe 
-#the network for values under 5. The same behavior is seen in the distribution 
-#of the minimum geodesic distance 
+
+# Even though the statics of the real network don't always fall into the 25%-75% quantile,
+#they are contained most of the time in the 95% confidence interval. 
+#On the other hand, the indegree distribution seems to be a really good approximation of the real one.
+
+
+
+# The density, reciprocity and transitivity have a really big statistical 
+#relevance for the estimated ergm; Edge density has a negative parameter suggesting 
+#a tendency to favor graphs with a lower number of edges, 
+#while the other two have the opposite influence. On the other hand,
+# department homophily and popularity described through number of nodes with 
+#indegree at least 6 don't seem to have any impact on the model given their high p-values.
+
+
 
