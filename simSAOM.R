@@ -49,14 +49,18 @@
 #' netT2 <- simulation(5, netT1, W, 4, -2, 0.5, 1)
 #' 
 #' 
-comp_stat<-function(x1,W,i){
+library(RSiena)
+library(sna)
+library(parallel)
+
+comp_stat<-function(x1,W,i,mean_W,n){
   a=0
   b=0
   d=0
   for (k in 1:n){
     a=a+x1[i,k]  #outdegree
     b=b+x1[i,k]*x1[k,i]  #reciprocity
-    d=d+W[i,k]           #dyadic covariate
+    d=d+x1[i,k]*(W[i,k]-mean_W)           #dyadic covariate centered effect
   }
   return(as.double(c(a,b,d)))
 }
@@ -78,6 +82,7 @@ comp_prob<-function(b1,b2,b3,vect_stat,n){
 simulation <- function(n, x1, W, lambda, beta1, beta2, beta3) {
   t <- 0 # time
   x <- x1
+  mean_W=mean(matrix(W,1,n*n))
   while (t < 1) {
     dt <- rexp(1, n * lambda)
     # --- MISSING ---
@@ -87,13 +92,13 @@ simulation <- function(n, x1, W, lambda, beta1, beta2, beta3) {
     for (k in 1:n){    #computing the statistics for all choices
       
       if(k==i){                                #if k==i we interpret it as the choice of leaving the network unchanged 
-        vect_stat[1:3,k]=comp_stat(x1,W,k)     #Break is necessary to stop the computation in this iteration
+        vect_stat[1:3,k]=comp_stat(x1,W,k,mean_W,n)     #Break is necessary to stop the computation in this iteration
         break                                   
       }                                        
       
       x2=x                                     #copy the current network for computing statistics of its variation
       x2[i,k]=xor(x2[i,k],1)                   #invert the tie i->j in the hypothetical network
-      vect_stat[1:3,k]=comp_stat(x2,W,k)       #compute and store the statistics for the current choice
+      vect_stat[1:3,k]=comp_stat(x2,W,k,mean_W,n)       #compute and store the statistics for the current choice
       
     }
     
@@ -117,8 +122,37 @@ simulation <- function(n, x1, W, lambda, beta1, beta2, beta3) {
 #  components of the output object (e.g., res$rate and res$theta).
 
 # ---MISSING---
+setwd("C:/Users/Riccardo Ghetti/Downloads/Network modeling/Assignment2/Assignment2")
+net1=as.matrix(read.csv("net1.csv",header=FALSE))
+net2=as.matrix(read.csv("net2.csv",header=FALSE))
+W=as.matrix(read.csv("W.csv",header=FALSE))
 
+friendship=sienaDependent(array(c(net1,net2), dim=c(22,22,2)))
 
+dyad=coDyadCovar(W)
+mydata=sienaDataCreate(friendship,dyad)
+mydata
+
+myeff=getEffects(mydata)
+myeff
+effectsDocumentation(myeff)
+
+myeff=includeEffects(myeff,X,interaction1 = "dyad")
+
+myAlgorithm <- sienaAlgorithmCreate(
+  projname = "friends_W",
+  nsub = 4, n3 = 3000, seed = 1908
+)
+
+model0 <- siena07(
+  myAlgorithm,
+  data = mydata, effects = myeff,
+  returnDeps = TRUE,
+  useCluster = TRUE, nbrNodes = 4, batch = FALSE
+)
+rate=model0$rate
+betas=model0$theta
+rm(model0)
 # Task 3.3 ----------------------------------------------------------------
 # Conditioning on the first observation, generate 1,000 simulations of the 
 # network evolution
@@ -127,8 +161,15 @@ simulation <- function(n, x1, W, lambda, beta1, beta2, beta3) {
 # the index of a simulated network and columns are the type of triads.
 # Column names should use the triad type name, e.g., "003", "012", "102", ... 
 
-# ---MISSING---
+results=array(0,dim=c(1000,22,22))
+beta1=betas[1]
+beta2=betas[2]
+beta3=betas[3]
 
+for (i in 1:1000)
+  results[i,1:22,1:22]=simulation(22,net1,W,rate,beta1,beta2,beta3)
+
+triadCensus=triad.census(results)
 # Task 3.4 ----------------------------------------------------------------
 ## i. standardized the simulated network stats. ----
 ##   Name the resulting object as triadCensusStd
