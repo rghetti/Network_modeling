@@ -52,6 +52,7 @@
 library(RSiena)
 library(sna)
 library(parallel)
+library(MASS)
 
 comp_stat<-function(x1,W,i,mean_W,n){
   a=0
@@ -166,24 +167,49 @@ beta1=betas[1]
 beta2=betas[2]
 beta3=betas[3]
 
-for (i in 1:1000)
+for (i in 1:1000){
   results[i,1:22,1:22]=simulation(22,net1,W,rate,beta1,beta2,beta3)
-
+}
 triadCensus=triad.census(results)
+
 # Task 3.4 ----------------------------------------------------------------
 ## i. standardized the simulated network stats. ----
 ##   Name the resulting object as triadCensusStd
 
-# ---MISSING---
+triad_stat=matrix(0,16,2)
+
+for (e in 1:16){
+  triad_stat[e,1]=mean(triadCensus[1:1000,e]) #the mean of each column
+  triad_stat[e,2]=sd(triadCensus[1:1000,e]) #its standard deviation
+}
+
+triadCensusStd=matrix(0,1000,16)
+
+for(e in 1:16){
+  average_e=triad_stat[e,1]
+  sd_e=triad_stat[e,2]
+  for (g in 1:1000){
+    triadCensusStd[g,e]=(triadCensus[g,e]-average_e)/sd_e  #standardize the values for each network
+  }
+}
+
+
+
 
 ## ii. variance-covariance matrix and its generalized inverse.         ----
 
-# ---MISSING---
-
+p_h=cov(triadCensusStd,triadCensusStd)  #compute the covariance matrix
+p_inv=ginv(p_h)                         #compute its generalized inverse
 ## iii. standardized the observed values of the triad census counts    ----
 ##  in the second observation using values from i.
 
-# ---MISSING---
+net2
+
+Obs_stat=triad.census(net2)
+for (e in 1:16){
+  Obs_stat[e]=(Obs_stat[e]-triad_stat[e,1])/triad_stat[e,2] #normalize obs stat
+}
+
 
 ## iv. Monte-Carlo Mahalanobis distance computation                                ----
 # Compute the Mahalanobis distance using the mhd function for 
@@ -204,16 +230,30 @@ triadCensus=triad.census(results)
 #' mhd(c(2, 4) - c(1.5, 2), solve(matrix(c(1, 0.8, 0.8, 1), ncol = 2)))
 mhd <- function(auxStats, invCov) {
   t(auxStats) %*% invCov %*% auxStats
+  }
+
+mahal=matrix(0,1001,1)
+
+for(e in 1:1000){
+  mahal[e]=mhd(triadCensusStd[e,1:16], p_inv)
 }
 
+mahal[1001]=mhd(t(Obs_stat), p_inv)
 
-# ---MISSING---
+
+
 
 ## v. Monte-Carlo p-value computation                                ----
 # Compute the proportion of simulated networks where the distance is 
 # equal or greater than the distance in the observed network.
 
-# ---MISSING---
+p_val=0
+for (e in 1:1000){
+  if(mahal[e]>=mahal[1001])
+    p_val=p_val+1
+}
+p_val=p_val/1000
+p_val
 
 # violin plots ------------------------------------------------------------
 # Fill out the missing part and run the code to obtain the violin plots
@@ -238,7 +278,7 @@ triadCensusDf <- data.frame(triadCensusStd) |>
 # Compute the statistics of the observed network at time t2,
 #  standardized using the stats from 2.4 literal i.
 triadCensusObs <- # ---MISSING--- |> 
-  data.frame() |>
+  data.frame(Obs_stat) |>
   pivot_longer(
     everything(),
     names_to = "triad", names_pattern = "^X(.+)$",
@@ -260,7 +300,7 @@ percTriad <- triadCensusDf |>
     values_to = "nnodes"
   )
 
-
+plot.new()
 # The following code produces the violin plots
 ggplot(triadCensusDf, aes(fct_inorder(triad), nnodes)) +
   geom_violin(trim = FALSE, scale = "width") +
