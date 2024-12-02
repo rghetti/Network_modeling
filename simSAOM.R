@@ -83,7 +83,7 @@ comp_prob<-function(b1,b2,b3,vect_stat,n){
 simulation <- function(n, x1, W, lambda, beta1, beta2, beta3) {
   t <- 0 # time
   x <- x1
-  mean_W=mean(matrix(W,1,n*n))
+  mean_W=mean(matrix(W,1,n*n)) #compute the mean of the vectorized matrix
   while (t < 1) {
     dt <- rexp(1, n * lambda)
     # --- MISSING ---
@@ -210,6 +210,7 @@ for (e in 1:16){
   Obs_stat[e]=(Obs_stat[e]-triad_stat[e,1])/triad_stat[e,2] #normalize obs stat
 }
 
+colnames(triadCensusStd)<-colnames(triadCensus)
 
 ## iv. Monte-Carlo Mahalanobis distance computation                                ----
 # Compute the Mahalanobis distance using the mhd function for 
@@ -277,8 +278,8 @@ triadCensusDf <- data.frame(triadCensusStd) |>
 
 # Compute the statistics of the observed network at time t2,
 #  standardized using the stats from 2.4 literal i.
-triadCensusObs <- # ---MISSING--- |> 
-  data.frame(Obs_stat) |>
+obs=data.frame(Obs_stat)
+triadCensusObs <- obs |>
   pivot_longer(
     everything(),
     names_to = "triad", names_pattern = "^X(.+)$",
@@ -325,3 +326,12 @@ ggplot(triadCensusDf, aes(fct_inorder(triad), nnodes)) +
   xlab("triad type") +
   title("Goodness of Fit of Triad Census Counts")
 
+
+#As it can be seen from the violin plots, the simulated networks for the most part
+#don't have an accurate goodness of fit regarding the triad census. While 5 out of
+#16 have their observed value within the 5-95% quantile interval, all of the other
+#types show that the observed value in net2 is a very big outlier. 
+#This bad goodness of fit is also exacerbated by the p_value of the Mahalanobis
+#distance: 0; indeed it can be seen that the real value is 576 while the simulated
+#ones rarely exceed 20. Therefore our simulations don't model in a satisfactory way
+#the data.
