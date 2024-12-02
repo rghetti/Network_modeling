@@ -176,3 +176,36 @@ siena.table(model1, type = "html", sig = TRUE)
 #The sign of the estimated value is positive, which supports the hypothesis H4.
 
 
+##Given the estimated model, do we have evidence for selection processes
+#only, influece processes only, both selection and influence processes, or
+#neither? Argue for your answer.
+
+#The hypotheses H1 and H2 are examples of selection processes. H1 describes a scenario where 
+#students are actively choosing their friends based on a specific attribute (popularity). 
+#It highlights the selection mechanism where students are drawn to others with certain social traits.
+#H2  also reflects a selection process, as the proximity (living nearby) serves as a criterion or facilitator
+#for choosing friendships. This is about selecting friends based on geographic or situational factors.
+#Thus we see evidence of selection processes.
+
+#On the other hand, the hypotheses H3 and H4 are examples of influence processes. H3 is not statistically relevant, 
+#so we concentrate on H4. It describes an influence process because it focuses on how students' behaviors (alcohol consumption)
+#are shaped by their social relationships (friends' behavior). It reflects the adjustment or conformity to peer norms.
+#Thus we see evidence of influence processes.
+
+
+#Could you think of two other hypotheses concerning the dynamics of
+#friendship and alcohol consumption dynamics that a researcher can test
+#using SAOMs? State these hypotheses and how you would operationalize
+#the corresponding effects in the evaluation function.
+
+
+#The first hypothesis is that male students tend to consume more alcohol.
+#To test this we can add the main covariate effect (effFrom) to the objective function.
+
+#The second hypothesis is that students of the same gender tend to be friends more than students of the oppostite genders.
+#To test this we can add covariate-related similarity (simX) effect.
+
+
+ 
+
+
