@@ -203,7 +203,7 @@ siena.table(model1, type = "html", sig = TRUE)
 #To test this we can add the main covariate effect (effFrom) to the objective function.
 
 #The second hypothesis is that students of the same gender tend to be friends more than students of the oppostite genders.
-#To test this we can add covariate-related similarity (simX) effect.
+#To test this we can add covariate-related similarity (simX) effect to the objective function.
 
 
  
